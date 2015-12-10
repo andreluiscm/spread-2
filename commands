@@ -1,0 +1,7 @@
+Compile:
+javac -cp .:../lib/* Server.java Client.java Slave.java
+
+Run:
+java -cp .:../lib/./* Server -s server_1 -r 1
+java -cp .:../lib/./* Slave -s slave_1
+java -cp .:../lib/./* Client -c client_1
