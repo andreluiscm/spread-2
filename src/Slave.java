@@ -1,16 +1,12 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import spread.AdvancedMessageListener;
@@ -48,20 +44,11 @@ public class Slave {
 	// Structure to store the filenames of the slave
 	private Set<String> tsFiles;
 	
-	// Which operation is being executed
-	private String turn;
-	
 	// Structure to store the files and the clients that are reading those files
 	private Map<String, ArrayList<String>> hmReadLock;
 	
 	// Structure to store the files and the clients that are writing in those files
 	private Map<String, String> hmWriteLock;
-	
-	// Structure to store the reading requests from clients
-	private Map<String, String> lhmWaitingRead;
-	
-	// Structure to store the writing requests from clients
-	private Map<String, String> lhmWaitingWrite;
 	
 	public Slave(String address, int port, String slave, String group) {
 		
@@ -112,11 +99,8 @@ public class Slave {
 			this.masterGroup = "servers";
 			this.clientsGroup = "clients";
 			this.tsFiles = new TreeSet<String>();
-			this.turn = "";
 			this.hmReadLock = new HashMap<String, ArrayList<String>>();
 			this.hmWriteLock = new HashMap<String, String>();
-			this.lhmWaitingRead = new LinkedHashMap<String, String>();
-			this.lhmWaitingWrite = new LinkedHashMap<String, String>();
 			
 			// Add the listeners
 			this.connection.add(new AdvancedMessageListener() {
@@ -127,7 +111,6 @@ public class Slave {
 					byte data[] = message.getData();
 					String dataMessage = new String(data);
 					String splittedMessage[];
-					SpreadMessage updatedMessage;
 					
 					// Message sent from Master to slave to resolve file operations
 					if (message.getType() == 0) {
@@ -549,13 +532,13 @@ public class Slave {
 			// Show the menu.
 			showMenu();
 			
-			// Get a user command.
+			// Get user command.
 			while(true)
 				getUserCommand();
 			
 		} else {
 			
-			System.err.println("Choose a server id between [0-1000].");
+			System.err.println("Choose a slave id between [0-1000].");
 			
 			System.exit(1);
 			
@@ -637,8 +620,8 @@ public class Slave {
 					
 					this.groupSize = members.length;
 					
-					MembershipInfo.VirtualSynchronySet virtual_synchrony_sets[] = info.getVirtualSynchronySets();
-					MembershipInfo.VirtualSynchronySet my_virtual_synchrony_set = info.getMyVirtualSynchronySet();
+					//MembershipInfo.VirtualSynchronySet virtual_synchrony_sets[] = info.getVirtualSynchronySets();
+					//MembershipInfo.VirtualSynchronySet my_virtual_synchrony_set = info.getMyVirtualSynchronySet();
 
 					//System.out.println("\nREGULAR membership for group " + group +
 							  //" with " + members.length + " members:");
@@ -723,14 +706,14 @@ public class Slave {
 					
 					}
 					
-					else if (info.isCausedByNetwork()) {
+					//else if (info.isCausedByNetwork()) {
 						
 						//System.out.println("NETWORK change");
 						
-						for (int i = 0; i < virtual_synchrony_sets.length; i++ ) {
+						//for (int i = 0; i < virtual_synchrony_sets.length; i++ ) {
 							
-							MembershipInfo.VirtualSynchronySet set = virtual_synchrony_sets[i];
-							SpreadGroup setMembers[] = set.getMembers();
+							//MembershipInfo.VirtualSynchronySet set = virtual_synchrony_sets[i];
+							//SpreadGroup setMembers[] = set.getMembers();
 							
 							//System.out.print("\t\t");
 							
@@ -745,9 +728,9 @@ public class Slave {
 							//for (int j = 0; j < set.getSize(); j++)
 								//System.out.println("\t\t\t" + setMembers[j]);
 							
-						}
+						//}
 						
-					}
+					//}
 					
 				} //else if(info.isTransition())
 					//System.out.println("\nTRANSITIONAL membership for group " + group + ".");
@@ -768,10 +751,6 @@ public class Slave {
 	}
 	
 	private void getUserCommand() {
-
-		// Show the prompt.
-//		System.out.print("\n" + 
-//						 "Server> ");
 		
 		// Get the input.
 		char command[] = new char[1024];
@@ -789,13 +768,6 @@ public class Slave {
 			
 		}
 		
-		// Setup a tokenizer for the input.
-		StreamTokenizer tokenizer = new StreamTokenizer(new StringReader(new String(command, 1, inputLength - 1)));
-		
-		// Check what it is.
-		SpreadMessage message;
-		char buffer[];
-		
 		try {
 			
 			switch(command[0]) {
@@ -811,8 +783,6 @@ public class Slave {
 			//QUIT
 			case 'q':
 				
-				// Disconnect.
-				//this.connection.disconnect();
 				// Quit.
 				System.exit(0);
 				
@@ -843,10 +813,10 @@ public class Slave {
 		// Show menu.
 		System.out.print("\n" +
 						 "============\n" +
-						 "Server Menu:\n" +
+						 "Slave Menu:\n" +
 						 "============\n" +
 						 "\n" +
-						 "\tc -- check client status\n" +
+						 "\tc -- check slave status\n" +
 						 "\tq -- quit\n\n");
 		
 	}
@@ -864,10 +834,10 @@ public class Slave {
 			// Check the args.
 			for (int i = 0; i < args.length; i++) {
 				
-				// Check for user.
+				// Check for slave.
 				if ((args[i].compareTo("-s") == 0) && (args.length > (i + 1))) {
 					
-					// Set user.
+					// Set slave.
 					i++;
 					slave = args[i];
 					

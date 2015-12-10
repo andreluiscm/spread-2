@@ -1,4 +1,3 @@
-import java.awt.List;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
@@ -10,9 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import spread.AdvancedMessageListener;
 import spread.MembershipInfo;
@@ -50,12 +47,13 @@ public class Server {
 	// The server name of the Master.
 	private String master;
 	
-	// Structure to store the priority of all server in the group
+	// Structure to store the priority of all server in the group.
 	private Map<String, Integer> tmServers;
 	
-	// Structure to store the the slaves/files
+	// Structure to store the the slaves/files.
 	private Map<String, ArrayList<String>> hmSlavesAndFiles;
 	
+	// Counts the number of votes received to elect this server as Master.
 	private int votes;
 	
 	public Server(String address, int port, String server, int priority, String group) {
@@ -467,7 +465,7 @@ public class Server {
 			// Show the menu.
 			showMenu();
 			
-			// Get a user command.
+			// Get user command.
 			while(true)
 				getUserCommand();
 			
@@ -504,14 +502,6 @@ public class Server {
 						tempPriority = this.tmServers.get(key);
 						
 					}
-					
-//				this.master = tempMaster;
-//				
-//				System.out.println("\n" + this.serverName + ": " + this.master + " is the Master.");
-//				
-//				System.out.println("\nALL SERVERS:");
-//				for (String key : this.tmServers.keySet())
-//					System.out.println("(" + key + "; PRIORITY: " + String.valueOf(this.tmServers.get(key)) + ")");
 				
 				SpreadMessage voteMessage = new SpreadMessage();
 				voteMessage.setSafe();
@@ -559,14 +549,6 @@ public class Server {
 							tempPriority = this.tmServers.get(key);
 							
 						}
-						
-//					this.master = tempMaster;
-//					
-//					System.out.println("\n" + this.serverName + ": " + this.master + " is the Master.");
-//					
-//					System.out.println("\nALL SERVERS:");
-//					for (String key : this.tmServers.keySet())
-//						System.out.println("(" + key + "; PRIORITY: " + String.valueOf(this.tmServers.get(key)) + ")");
 					
 					SpreadMessage voteMessage = new SpreadMessage();
 					voteMessage.setSafe();
@@ -706,8 +688,8 @@ public class Server {
 					
 					this.groupSize = members.length; 
 					
-					MembershipInfo.VirtualSynchronySet virtual_synchrony_sets[] = info.getVirtualSynchronySets();
-					MembershipInfo.VirtualSynchronySet my_virtual_synchrony_set = info.getMyVirtualSynchronySet();
+					//MembershipInfo.VirtualSynchronySet virtual_synchrony_sets[] = info.getVirtualSynchronySets();
+					//MembershipInfo.VirtualSynchronySet my_virtual_synchrony_set = info.getMyVirtualSynchronySet();
 
 					//System.out.println("\nREGULAR membership for group " + group +
 							   //" with " + members.length + " members:");
@@ -764,14 +746,14 @@ public class Server {
 						
 					}
 					
-					else if (info.isCausedByNetwork()) {
+					//else if (info.isCausedByNetwork()) {
 						
 						//System.out.println("NETWORK change");
 						
-						for (int i = 0; i < virtual_synchrony_sets.length; i++ ) {
+						//for (int i = 0; i < virtual_synchrony_sets.length; i++ ) {
 							
-							MembershipInfo.VirtualSynchronySet set = virtual_synchrony_sets[i];
-							SpreadGroup setMembers[] = set.getMembers();
+							//MembershipInfo.VirtualSynchronySet set = virtual_synchrony_sets[i];
+							//SpreadGroup setMembers[] = set.getMembers();
 							
 							//System.out.print("\t\t");
 							
@@ -786,9 +768,9 @@ public class Server {
 							//for (int j = 0; j < set.getSize(); j++)
 								//System.out.println("\t\t\t" + setMembers[j]);
 							
-						}
+						//}
 						
-					}
+					//}
 					
 				} //else if(info.isTransition())
 					//System.out.println("\nTRANSITIONAL membership for group " + group + ".");
@@ -809,10 +791,6 @@ public class Server {
 	}
 	
 	private void getUserCommand() {
-
-		// Show the prompt.
-//		System.out.print("\n" + 
-//						 "Server> ");
 		
 		// Get the input.
 		char command[] = new char[1024];
@@ -829,13 +807,6 @@ public class Server {
 			System.exit(1);
 			
 		}
-		
-		// Setup a tokenizer for the input.
-		StreamTokenizer tokenizer = new StreamTokenizer(new StringReader(new String(command, 1, inputLength - 1)));
-		
-		// Check what it is.
-		SpreadMessage message;
-		char buffer[];
 		
 		try {
 			
@@ -859,8 +830,6 @@ public class Server {
 			//QUIT
 			case 'q':
 				
-				// Disconnect.
-				//this.connection.disconnect();
 				// Quit.
 				System.exit(0);
 				
@@ -913,10 +882,10 @@ public class Server {
 			// Check the args.
 			for (int i = 0; i < args.length; i++) {
 				
-				// Check for user.
+				// Check for server.
 				if ((args[i].compareTo("-s") == 0) && (args.length > (i + 1))) {
 					
-					// Set user.
+					// Set server.
 					i++;
 					server = args[i];
 					
@@ -945,7 +914,7 @@ public class Server {
 			
 		} else {
 			
-			System.out.print("Usage: java User\n" + 
+			System.out.print("Usage: java Server\n" + 
 					 "\t[-s <server name>] : unique server name\n" +
 					 "\t[-r <priority>]    : the priority of the process\n");
 			

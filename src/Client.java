@@ -1,18 +1,10 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -47,12 +39,7 @@ public class Client {
 	// The group name of the Slaves.
 	private String slavesGroup;
 	
-	// The server name of the Master.
-	private String master;
-	
-	// The server name of the Slave.
-	private String slave;
-	
+	// Sleeper to wait responses from user requests.
 	private Sleep sleeper;
 	
 	public Client(String address, int port, String client, String group) {
@@ -427,13 +414,13 @@ public class Client {
 			// Show the menu.
 			showMenu();
 			
-			// Get a user command.
+			// Get user command.
 			while(true)
 				getUserCommand();
 			
 		} else {
 			
-			System.err.println("Choose a server id between [0-1000].");
+			System.err.println("Choose a client id between [0-1000].");
 			
 			System.exit(1);
 			
@@ -515,8 +502,8 @@ public class Client {
 					
 					this.groupSize = members.length;
 					
-					MembershipInfo.VirtualSynchronySet virtual_synchrony_sets[] = info.getVirtualSynchronySets();
-					MembershipInfo.VirtualSynchronySet my_virtual_synchrony_set = info.getMyVirtualSynchronySet();
+					//MembershipInfo.VirtualSynchronySet virtual_synchrony_sets[] = info.getVirtualSynchronySets();
+					//MembershipInfo.VirtualSynchronySet my_virtual_synchrony_set = info.getMyVirtualSynchronySet();
 
 					//System.out.println("\nREGULAR membership for group " + group +
 							  // " with " + members.length + " members:");
@@ -533,14 +520,6 @@ public class Client {
 						//System.out.println("the JOIN of " + info.getJoined());
 						System.out.println(info.getJoined().toString().split("#")[1] + " JOINED the group " + this.group.toString() + ".\n");
 						
-//						SpreadMessage joinMessage = new SpreadMessage();
-//						joinMessage.setSafe();
-//						joinMessage.setType((short) 0);
-//						joinMessage.addGroup(info.getGroup().toString());
-//						joinMessage.setData(new String("&join&" + this.clientName).getBytes());
-//						
-//						this.connection.multicast(joinMessage);
-						
 					}
 					
 					else if (info.isCausedByLeave()) {
@@ -548,39 +527,23 @@ public class Client {
 						//System.out.println("the LEAVE of " + info.getLeft());
 						System.out.println(info.getLeft().toString().split("#")[1] + " LEFT the group " + this.group.toString() + ".\n");
 						
-//						SpreadMessage leaveMessage = new SpreadMessage();
-//						leaveMessage.setSafe();
-//						leaveMessage.setType((short) 0);
-//						leaveMessage.addGroup(info.getGroup().toString());
-//						leaveMessage.setData(new String("&leave&" + this.clientName).getBytes());
-//						
-//						this.connection.multicast(leaveMessage);
-						
 					}
 					
 					else if (info.isCausedByDisconnect()) {
 						
 						//System.out.println("the DISCONNECT of " + info.getDisconnected());
 						System.out.println(info.getDisconnected().toString().split("#")[1] + " was DISCONNECTED from the group " + this.group.toString() + ".\n");
-						
-//						SpreadMessage disconnectMessage = new SpreadMessage();
-//						disconnectMessage.setSafe();
-//						disconnectMessage.setType((short) 0);
-//						disconnectMessage.addGroup(info.getGroup().toString());
-//						disconnectMessage.setData(new String("&disconnect&" + this.clientName).getBytes());
-//						
-//						this.connection.multicast(disconnectMessage);
 					
 					}
 					
-					else if (info.isCausedByNetwork()) {
+					//else if (info.isCausedByNetwork()) {
 						
 						//System.out.println("NETWORK change");
 						
-						for (int i = 0; i < virtual_synchrony_sets.length; i++ ) {
+						//for (int i = 0; i < virtual_synchrony_sets.length; i++ ) {
 							
-							MembershipInfo.VirtualSynchronySet set = virtual_synchrony_sets[i];
-							SpreadGroup setMembers[] = set.getMembers();
+							//MembershipInfo.VirtualSynchronySet set = virtual_synchrony_sets[i];
+							//SpreadGroup setMembers[] = set.getMembers();
 							
 							//System.out.print("\t\t");
 							
@@ -595,9 +558,9 @@ public class Client {
 							//for (int j = 0; j < set.getSize(); j++)
 								//System.out.println("\t\t\t" + setMembers[j]);
 							
-						}
+						//}
 						
-					}
+					//}
 					
 				} //else if(info.isTransition())
 					//System.out.println("\nTRANSITIONAL membership for group " + group + ".");
@@ -618,10 +581,6 @@ public class Client {
 	}
 	
 	private void getUserCommand() {
-
-		// Show the prompt.
-//		System.out.print("\n" + 
-//						 "Server> ");
 		
 		// Get the input.
 		char command[] = new char[1024];
@@ -744,9 +703,7 @@ public class Client {
 				
 			//QUIT
 			case 'q':
-				
-				// Disconnect.
-				//this.connection.disconnect();
+
 				// Quit.
 				System.exit(0);
 				
@@ -777,7 +734,7 @@ public class Client {
 		// Show menu.
 		System.out.print("\n" +
 						 "============\n" +
-						 "Server Menu:\n" +
+						 "Client Menu:\n" +
 						 "============\n" +
 						 "\n" +
 						 "\tc -- check client status\n" +
@@ -804,10 +761,10 @@ public class Client {
 			// Check the args.
 			for (int i = 0; i < args.length; i++) {
 				
-				// Check for user.
+				// Check for client.
 				if ((args[i].compareTo("-c") == 0) && (args.length > (i + 1))) {
 					
-					// Set user.
+					// Set client.
 					i++;
 					client = args[i];
 					
